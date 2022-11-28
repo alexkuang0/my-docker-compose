@@ -1,0 +1,44 @@
+version: "3.3"
+services:
+  flarum:
+    environment:
+      DATABASE_URL: "mysql://flarum:flarum@db/flarum"
+      FLARUM_BASE_URL: # url here
+      FLARUM_FORUM_TITLE: # title here
+      PHP_UPLOAD_MAX_FILESIZE: "100M" # cloudflare limit
+      PHP_POST_MAX_SIZE: "100M" # cloudflare limit
+    ports:
+      - "8000:8000"
+    image: minidocks/flarum
+    networks:
+      - flarum-network
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: "flarum"
+      MYSQL_USER: "flarum"
+      MYSQL_PASSWORD: "flarum"
+      MYSQL_ROOT_PASSWORD: "root_flarum"
+    volumes:
+      - flarum-db:/var/lib/mysql
+    networks:
+      - flarum-network
+
+  search:
+    image: valeriansaliou/sonic:v1.4.0
+    volumes:
+      - /path/to/sonic-search/flarum.cfg:/etc/sonic.cfg
+      - sonic-store:/var/lib/sonic/store/
+    networks:
+      - flarum-network
+    restart: always
+
+networks:
+  flarum-network:
+volumes:
+  flarum-db:
+  sonic-store:
