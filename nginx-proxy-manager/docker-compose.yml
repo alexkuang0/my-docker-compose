@@ -1,0 +1,15 @@
+version: "3"
+services:
+  app:
+    image: "jc21/nginx-proxy-manager:latest"
+    restart: unless-stopped
+
+    volumes:
+      - nginx-data:/data
+      - letsencrypt-data:/etc/letsencrypt
+
+    network_mode: "host"
+
+volumes:
+  nginx-data:
+  letsencrypt-data:
