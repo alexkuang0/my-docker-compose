@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  bark-server:
+    image: finab/bark-server
+    restart: always
+    volumes:
+      - bark-data:/data
+    ports:
+      - "8080:8080"
+
+volumes:
+  bark-data:
