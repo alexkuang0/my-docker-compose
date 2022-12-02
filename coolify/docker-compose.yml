@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  coolify:
+    image: coollabsio/coolify:latest
+    container_name: coolify
+    restart: always
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: host
+    environment:
+      - COOLIFY_APP_ID=
+      - COOLIFY_SECRET_KEY= # generate a secret key of length 32
+      - COOLIFY_DATABASE_URL=file:../db/prod.db
+      - COOLIFY_IS_ON=docker
+      - COOLIFY_WHITE_LABELED=false
+      - COOLIFY_WHITE_LABELED_ICON=
+      - COOLIFY_AUTO_UPDATE=true
+      - DO_NOT_TRACK=1
+    volumes:
+      - "coolify-db:/app/db"
+      - "coolify-logs:/app/logs"
+      - "coolify-ssl-certs:/app/ssl"
+      - "coolify-traefik-letsencrypt:/etc/traefik/acme"
+      - "coolify-letsencrypt:/etc/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - coolify-infra
+  fluent-bit:
+    image: coollabsio/coolify-fluent-bit:1.0.0
+    container_name: coolify-fluentbit
+    volumes:
+      - "coolify-logs:/app/logs"
+    networks:
+      - coolify-infra
+networks:
+  coolify-infra:
+    name: coolify-infra
+    attachable: true
+
+volumes:
+  coolify-logs:
+    name: coolify-logs
+  coolify-db:
+    name: coolify-db
+  coolify-pgdb:
+    name: coolify-pgdb
+  coolify-ssl-certs:
+    name: coolify-ssl-certs
+  coolify-letsencrypt:
+    name: coolify-letsencrypt
+  coolify-traefik-letsencrypt:
+    name: coolify-traefik-letsencrypt
