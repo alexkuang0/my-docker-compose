@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+  server:
+    image: vaultwarden/server:latest
+    ports:
+      - 50080:80
+    restart: always
+    volumes:
+      - vw-data:/data/
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db/vaultwarden
+      ADMIN_TOKEN: <admin_token>
+      RUST_BACKTRACE: 1
+      SIGNUPS_ALLOWED: "false"
+      INVITATIONS_ALLOWED: "true"
+      DOMAIN: <domain>
+    depends_on:
+      - db
+    networks:
+      - vw-network
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: vaultwarden
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - vw-network
+    volumes:
+      - vw-pg-data:/var/lib/postgresql/data
+
+networks:
+  vw-network:
+
+volumes:
+  vw-data:
+  vw-pg-data:
